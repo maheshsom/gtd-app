@@ -47,12 +47,12 @@ input::placeholder,textarea::placeholder{color:#c7c7cc}
     <div class="row"><span class="lbl">Task</span><input id="task" type="text" placeholder="What needs to be done?" autocomplete="off"/></div>
     <div class="row"><span class="lbl">When</span>
       <select id="when"><option value="">Select...</option>
-        <option>Inbox</option><option>Today</option><option>Next Action</option>
-        <option>Someday/Maybe</option><option>Waiting</option><option>Completed</option>
+        <option>5 - Inbox</option><option>1 - Today</option><option>2 - Next Action</option>
+        <option>3 - Someday/Maybe</option><option>0 - Waiting</option><option>4 - Completed</option>
       </select></div>
     <div class="row"><span class="lbl">Priority</span>
       <select id="priority"><option value="">Select...</option>
-        <option>High</option><option>Medium</option><option>Low</option>
+        <option>1 - High</option><option>2 - Medium</option><option>3 - Low</option>
       </select></div>
     <div class="row"><span class="lbl">Due Date</span><input id="dueDate" type="date"/></div>
     <div class="row"><span class="lbl">Category</span>
@@ -66,7 +66,7 @@ input::placeholder,textarea::placeholder{color:#c7c7cc}
   <button id="submitBtn" type="button">Add Task</button>
 </div>
 <script>
-var SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE";
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxdPK4IwQ-UCLIAs9PXzb_IPRrV6V2yUjgfnvCY91dPAqVbRK9dNbK_z1JuhxITpgD/exec";
 
 document.getElementById("submitBtn").addEventListener("click", function() {
   var task = document.getElementById("task").value.trim();
@@ -115,4 +115,4 @@ document.getElementById("submitBtn").addEventListener("click", function() {
 });
 </script>
 </body>
-</html>
+</html>	
