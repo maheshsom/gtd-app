@@ -1,118 +1,132 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<meta name="mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<title>GTD</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;width:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;background:#f2f2f7;font-size:18px;-webkit-text-size-adjust:none;overflow-x:hidden}
-header{background:#fff;padding:16px;border-bottom:1px solid #e5e5ea;position:sticky;top:0;z-index:10}
-header h1{font-size:24px;font-weight:700;color:#1c1c1e}
-.body{padding:14px 16px 60px;width:100%}
-.card{background:#fff;border-radius:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08);overflow:hidden}
-.row{display:flex;align-items:center;min-height:54px;padding:0 16px;border-bottom:1px solid #f2f2f7}
-.row:last-child{border-bottom:none}
-.row.notes-row{align-items:flex-start}
-.lbl{font-size:16px;font-weight:600;color:#3a3a3c;width:95px;flex-shrink:0}
-input[type=text],input[type=date],textarea,select{
-  flex:1;border:none;outline:none;font-size:17px;color:#1c1c1e;
-  background:transparent;font-family:inherit;padding:14px 0;
-  -webkit-appearance:none;appearance:none;width:100%}
-select{
-  cursor:pointer;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238e8e93' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 4px center;padding-right:24px}
-textarea{resize:none;padding:14px 0;line-height:1.5}
-input::placeholder,textarea::placeholder{color:#c7c7cc}
-.status{border-radius:12px;padding:14px 16px;margin-bottom:12px;font-size:16px;font-weight:500;display:none}
-.status.error{background:#fff1f2;border:1px solid #fecdd3;color:#be123c;display:block}
-.status.success{background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;display:block}
-#submitBtn{
-  display:block;width:100%;padding:18px;border-radius:14px;border:none;
-  background:#007aff;color:#fff;font-size:19px;font-weight:700;
-  cursor:pointer;font-family:inherit;-webkit-appearance:none;appearance:none}
-#submitBtn:active{background:#0062cc}
-#submitBtn:disabled{background:#93c5fd}
-</style>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
 </head>
 <body>
-<header><h1>New Task</h1></header>
-<div class="body">
-  <div class="card">
-    <div class="row"><span class="lbl">Task</span><input id="task" type="text" placeholder="What needs to be done?" autocomplete="off"/></div>
-    <div class="row"><span class="lbl">When</span>
-      <select id="when"><option value="">Select...</option>
-        <option>5 - Inbox</option><option>1 - Today</option><option>2 - Next Action</option>
-        <option>3 - Someday/Maybe</option><option>0 - Waiting</option><option>4 - Completed</option>
-      </select></div>
-    <div class="row"><span class="lbl">Priority</span>
-      <select id="priority"><option value="">Select...</option>
-        <option>1 - High</option><option>2 - Medium</option><option>3 - Low</option>
-      </select></div>
-    <div class="row"><span class="lbl">Due Date</span><input id="dueDate" type="date"/></div>
-    <div class="row"><span class="lbl">Category</span>
-      <select id="category"><option value="">Select...</option>
-        <option>Personal</option><option>Home</option><option>WFG</option>
-        <option>Angelead</option><option>Finance</option><option>Work</option>
-      </select></div>
-    <div class="row notes-row"><span class="lbl" style="padding-top:14px">Notes</span><textarea id="notes" rows="3" placeholder="Optional..."></textarea></div>
-  </div>
-  <div id="status" class="status"></div>
-  <button id="submitBtn" type="button">Add Task</button>
-</div>
-<script>
-var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxdPK4IwQ-UCLIAs9PXzb_IPRrV6V2yUjgfnvCY91dPAqVbRK9dNbK_z1JuhxITpgD/exec";
-
-document.getElementById("submitBtn").addEventListener("click", function() {
-  var task = document.getElementById("task").value.trim();
-  var when = document.getElementById("when").value;
-  var priority = document.getElementById("priority").value;
-  var dueDate = document.getElementById("dueDate").value;
-  var category = document.getElementById("category").value;
-  var notes = document.getElementById("notes").value.trim();
-  var box = document.getElementById("status");
-  var btn = document.getElementById("submitBtn");
-
-  box.className = "status"; box.textContent = "";
-  if (!task) { box.className = "status error"; box.textContent = "⚠️ Task is required."; return; }
-  if (!when) { box.className = "status error"; box.textContent = "⚠️ Please select When."; return; }
-  if (!priority) { box.className = "status error"; box.textContent = "⚠️ Please select Priority."; return; }
-  if (!category) { box.className = "status error"; box.textContent = "⚠️ Please select Category."; return; }
-
-  btn.disabled = true; btn.textContent = "Saving...";
-
-  var createdOn = new Date().toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" });
-  var row = [createdOn, task, when, priority, dueDate, category, notes];
-
-  fetch(SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({ row: row })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(j) {
-    if (j.result === "success") {
-      box.className = "status success"; box.textContent = "✅ Task added!";
-      document.getElementById("task").value = "";
-      document.getElementById("when").value = "";
-      document.getElementById("priority").value = "";
-      document.getElementById("dueDate").value = "";
-      document.getElementById("category").value = "";
-      document.getElementById("notes").value = "";
-      btn.disabled = false; btn.textContent = "Add Task";
-      setTimeout(function() { box.className = "status"; box.textContent = ""; }, 3000);
-    } else { throw new Error(j.message || "Unknown error"); }
-  })
-  .catch(function(e) {
-    box.className = "status error"; box.textContent = "⚠️ " + e.message;
-    btn.disabled = false; btn.textContent = "Add Task";
-  });
-});
-</script>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8"/&gt;</p>
+<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/&gt;</p>
+<p class="p1">&lt;meta name="mobile-web-app-capable" content="yes"/&gt;</p>
+<p class="p1">&lt;meta name="apple-mobile-web-app-capable" content="yes"/&gt;</p>
+<p class="p1">&lt;meta name="apple-mobile-web-app-status-bar-style" content="default"/&gt;</p>
+<p class="p1">&lt;title&gt;GTD&lt;/title&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1">*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}</p>
+<p class="p1">html,body{height:100%;width:100%}</p>
+<p class="p1">body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;background:#f2f2f7;font-size:18px;-webkit-text-size-adjust:none;overflow-x:hidden}</p>
+<p class="p1">header{background:#fff;padding:16px;border-bottom:1px solid #e5e5ea;position:sticky;top:0;z-index:10}</p>
+<p class="p1">header h1{font-size:24px;font-weight:700;color:#1c1c1e}</p>
+<p class="p1">.body{padding:14px 16px 60px;width:100%}</p>
+<p class="p1">.card{background:#fff;border-radius:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08);overflow:hidden}</p>
+<p class="p1">.row{display:flex;align-items:center;min-height:54px;padding:0 16px;border-bottom:1px solid #f2f2f7}</p>
+<p class="p1">.row:last-child{border-bottom:none}</p>
+<p class="p1">.row.notes-row{align-items:flex-start}</p>
+<p class="p1">.lbl{font-size:16px;font-weight:600;color:#3a3a3c;width:95px;flex-shrink:0}</p>
+<p class="p1">input[type=text],input[type=date],textarea,select{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex:1;border:none;outline:none;font-size:17px;color:#1c1c1e;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background:transparent;font-family:inherit;padding:14px 0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>-webkit-appearance:none;appearance:none;width:100%}</p>
+<p class="p1">select{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>cursor:pointer;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238e8e93' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background-repeat:no-repeat;background-position:right 4px center;padding-right:24px}</p>
+<p class="p1">textarea{resize:none;padding:14px 0;line-height:1.5}</p>
+<p class="p1">input::placeholder,textarea::placeholder{color:#c7c7cc}</p>
+<p class="p1">.status{border-radius:12px;padding:14px 16px;margin-bottom:12px;font-size:16px;font-weight:500;display:none}</p>
+<p class="p1">.status.error{background:#fff1f2;border:1px solid #fecdd3;color:#be123c;display:block}</p>
+<p class="p1">.status.success{background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;display:block}</p>
+<p class="p1">#submitBtn{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display:block;width:100%;padding:18px;border-radius:14px;border:none;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background:#007aff;color:#fff;font-size:19px;font-weight:700;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>cursor:pointer;font-family:inherit;-webkit-appearance:none;appearance:none}</p>
+<p class="p1">#submitBtn:active{background:#0062cc}</p>
+<p class="p1">#submitBtn:disabled{background:#93c5fd}</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1">&lt;header&gt;&lt;h1&gt;New Task&lt;/h1&gt;&lt;/header&gt;</p>
+<p class="p1">&lt;div class="body"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="row"&gt;&lt;span class="lbl"&gt;Task&lt;/span&gt;&lt;input id="task" type="text" placeholder="What needs to be done?" autocomplete="off"/&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="row"&gt;&lt;span class="lbl"&gt;When&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;select id="when"&gt;&lt;option value=""&gt;Select...&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;option&gt;5 - Inbox&lt;/option&gt;&lt;option&gt;1 - Today&lt;/option&gt;&lt;option&gt;2 - Next Action&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;option&gt;3 - Someday/Maybe&lt;/option&gt;&lt;option&gt;0 - Waiting&lt;/option&gt;&lt;option&gt;4 - Completed&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/select&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="row"&gt;&lt;span class="lbl"&gt;Priority&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;select id="priority"&gt;&lt;option value=""&gt;Select...&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;option&gt;1 - High&lt;/option&gt;&lt;option&gt;2 - Medium&lt;/option&gt;&lt;option&gt;3 - Low&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/select&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="row"&gt;&lt;span class="lbl"&gt;Due Date&lt;/span&gt;&lt;input id="dueDate" type="date"/&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="row"&gt;&lt;span class="lbl"&gt;Category&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;select id="category"&gt;&lt;option value=""&gt;Select...&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;option&gt;Personal&lt;/option&gt;&lt;option&gt;Home&lt;/option&gt;&lt;option&gt;WFG&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;option&gt;Angelead&lt;/option&gt;&lt;option&gt;Finance&lt;/option&gt;&lt;option&gt;Work&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/select&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="row notes-row"&gt;&lt;span class="lbl" style="padding-top:14px"&gt;Notes&lt;/span&gt;&lt;textarea id="notes" rows="3" placeholder="Optional..."&gt;&lt;/textarea&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="status" class="status"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button id="submitBtn" type="button"&gt;Add Task&lt;/button&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4QPW0rIBDHZZXTM_bXg9EJFiFhxXyUOH7waGY4worMakxAFGjuPSsNN0Jx95nmKVb/exec";</p>
+<p class="p2"><br></p>
+<p class="p1">document.getElementById("submitBtn").addEventListener("click", function() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>var task = document.getElementById("task").value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>var when = document.getElementById("when").value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>var priority = document.getElementById("priority").value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>var dueDate = document.getElementById("dueDate").value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>var category = document.getElementById("category").value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>var notes = document.getElementById("notes").value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>var box = document.getElementById("status");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>var btn = document.getElementById("submitBtn");</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>box.className = "status"; box.textContent = "";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (!task) { box.className = "status error"; box.textContent = "⚠️ Task is required."; return; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (!when) { box.className = "status error"; box.textContent = "⚠️ Please select When."; return; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (!priority) { box.className = "status error"; box.textContent = "⚠️ Please select Priority."; return; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (!category) { box.className = "status error"; box.textContent = "⚠️ Please select Category."; return; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>btn.disabled = true; btn.textContent = "Saving...";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>var createdOn = new Date().toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" });</p>
+<p class="p1"><span class="Apple-converted-space">  </span>var row = [createdOn, task, when, priority, dueDate, category, notes];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>fetch(SCRIPT_URL, {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>method: "POST",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>mode: "no-cors",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>headers: { "Content-Type": "text/plain;charset=utf-8" },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>body: JSON.stringify({ row: row })</p>
+<p class="p1"><span class="Apple-converted-space">  </span>})</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.then(function() {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>box.className = "status success"; box.textContent = "✅ Task added!";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById("task").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById("when").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById("priority").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById("dueDate").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById("category").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById("notes").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>btn.disabled = false; btn.textContent = "Add Task";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setTimeout(function() { box.className = "status"; box.textContent = ""; }, 3000);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>})</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.catch(function(e) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>box.className = "status error"; box.textContent = "⚠️ " + e.message;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>btn.disabled = false; btn.textContent = "Add Task";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">});</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
 </body>
-</html>	
+</html>
