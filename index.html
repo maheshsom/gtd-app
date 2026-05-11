@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<title>GTD</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;width:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;background:#f2f2f7;font-size:18px;-webkit-text-size-adjust:none;overflow-x:hidden}
+header{background:#fff;padding:16px;border-bottom:1px solid #e5e5ea;position:sticky;top:0;z-index:10}
+header h1{font-size:24px;font-weight:700;color:#1c1c1e}
+.body{padding:14px 16px 60px;width:100%}
+.card{background:#fff;border-radius:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08);overflow:hidden}
+.row{display:flex;align-items:center;min-height:54px;padding:0 16px;border-bottom:1px solid #f2f2f7}
+.row:last-child{border-bottom:none}
+.row.notes-row{align-items:flex-start}
+.lbl{font-size:16px;font-weight:600;color:#3a3a3c;width:95px;flex-shrink:0}
+input[type=text],input[type=date],textarea,select{
+  flex:1;border:none;outline:none;font-size:17px;color:#1c1c1e;
+  background:transparent;font-family:inherit;padding:14px 0;
+  -webkit-appearance:none;appearance:none;width:100%}
+select{
+  cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238e8e93' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 4px center;padding-right:24px}
+textarea{resize:none;padding:14px 0;line-height:1.5}
+input::placeholder,textarea::placeholder{color:#c7c7cc}
+.status{border-radius:12px;padding:14px 16px;margin-bottom:12px;font-size:16px;font-weight:500;display:none}
+.status.error{background:#fff1f2;border:1px solid #fecdd3;color:#be123c;display:block}
+.status.success{background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;display:block}
+#submitBtn{
+  display:block;width:100%;padding:18px;border-radius:14px;border:none;
+  background:#007aff;color:#fff;font-size:19px;font-weight:700;
+  cursor:pointer;font-family:inherit;-webkit-appearance:none;appearance:none}
+#submitBtn:active{background:#0062cc}
+#submitBtn:disabled{background:#93c5fd}
+</style>
+</head>
+<body>
+<header><h1>New Task</h1></header>
+<div class="body">
+  <div class="card">
+    <div class="row"><span class="lbl">Task</span><input id="task" type="text" placeholder="What needs to be done?" autocomplete="off"/></div>
+    <div class="row"><span class="lbl">When</span>
+      <select id="when"><option value="">Select...</option>
+        <option>Inbox</option><option>Today</option><option>Next Action</option>
+        <option>Someday/Maybe</option><option>Waiting</option><option>Completed</option>
+      </select></div>
+    <div class="row"><span class="lbl">Priority</span>
+      <select id="priority"><option value="">Select...</option>
+        <option>High</option><option>Medium</option><option>Low</option>
+      </select></div>
+    <div class="row"><span class="lbl">Due Date</span><input id="dueDate" type="date"/></div>
+    <div class="row"><span class="lbl">Category</span>
+      <select id="category"><option value="">Select...</option>
+        <option>Personal</option><option>Home</option><option>WFG</option>
+        <option>Angelead</option><option>Finance</option><option>Work</option>
+      </select></div>
+    <div class="row notes-row"><span class="lbl" style="padding-top:14px">Notes</span><textarea id="notes" rows="3" placeholder="Optional..."></textarea></div>
+  </div>
+  <div id="status" class="status"></div>
+  <button id="submitBtn" type="button">Add Task</button>
+</div>
+<script>
+var SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE";
+
+document.getElementById("submitBtn").addEventListener("click", function() {
+  var task = document.getElementById("task").value.trim();
+  var when = document.getElementById("when").value;
+  var priority = document.getElementById("priority").value;
+  var dueDate = document.getElementById("dueDate").value;
+  var category = document.getElementById("category").value;
+  var notes = document.getElementById("notes").value.trim();
+  var box = document.getElementById("status");
+  var btn = document.getElementById("submitBtn");
+
+  box.className = "status"; box.textContent = "";
+  if (!task) { box.className = "status error"; box.textContent = "⚠️ Task is required."; return; }
+  if (!when) { box.className = "status error"; box.textContent = "⚠️ Please select When."; return; }
+  if (!priority) { box.className = "status error"; box.textContent = "⚠️ Please select Priority."; return; }
+  if (!category) { box.className = "status error"; box.textContent = "⚠️ Please select Category."; return; }
+
+  btn.disabled = true; btn.textContent = "Saving...";
+
+  var createdOn = new Date().toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" });
+  var row = [createdOn, task, when, priority, dueDate, category, notes];
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ row: row })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(j) {
+    if (j.result === "success") {
+      box.className = "status success"; box.textContent = "✅ Task added!";
+      document.getElementById("task").value = "";
+      document.getElementById("when").value = "";
+      document.getElementById("priority").value = "";
+      document.getElementById("dueDate").value = "";
+      document.getElementById("category").value = "";
+      document.getElementById("notes").value = "";
+      btn.disabled = false; btn.textContent = "Add Task";
+      setTimeout(function() { box.className = "status"; box.textContent = ""; }, 3000);
+    } else { throw new Error(j.message || "Unknown error"); }
+  })
+  .catch(function(e) {
+    box.className = "status error"; box.textContent = "⚠️ " + e.message;
+    btn.disabled = false; btn.textContent = "Add Task";
+  });
+});
+</script>
+</body>
+</html>
